@@ -15,19 +15,31 @@ using System.Windows.Shapes;
 
 namespace MatchGame
 {
+    using System.Windows.Threading;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        DispatcherTimer timer = new DispatcherTimer();
+        int tenthsOfSecondsElapsed;
+        int matchesFound;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            timer.Interval = TimeSpan.FromSeconds(.1);
+            timer.Tick += Timer_Tick;
+
             SetUpGame();
         }
 
         private void SetUpGame()
         {
+
+
             List<string> animalEmoji = new List<string>()
             {
                 "🦕","🦕",
@@ -43,14 +55,66 @@ namespace MatchGame
             // перебираем ячейки сетки и вставляем в них случайную картинку
             foreach (TextBlock textBlock in mainGrid.Children.OfType<TextBlock>())
             {
-                // Берем случайный индекс в диапазоне длинны списка картинок
-                int index = random.Next(animalEmoji.Count);
-                // выбираем картинку по получивщемуся индексу
-                string nextEmoji = animalEmoji[index];
-                // вставляем картинку в ячейку
-                textBlock.Text = nextEmoji;
-                // Удаляем ячейку с индексом
-                animalEmoji.RemoveAt(index);
+                if (textBlock.Name != "timeTextBlock")
+                {
+                    // Берем случайный индекс в диапазоне длинны списка картинок
+                    int index = random.Next(animalEmoji.Count);
+                    // выбираем картинку по получивщемуся индексу
+                    string nextEmoji = animalEmoji[index];
+                    // вставляем картинку в ячейку
+                    textBlock.Text = nextEmoji;
+                    // Удаляем ячейку с индексом
+                    animalEmoji.RemoveAt(index);
+                }
+
+                timer.Start();
+                tenthsOfSecondsElapsed = 0;
+                matchesFound = 0;
+            }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            tenthsOfSecondsElapsed++;
+            timeTextBlock.Text = (tenthsOfSecondsElapsed / 10F).ToString("0.0s");
+            if (matchesFound == 8)
+            {
+                timer.Stop();
+                timeTextBlock.Text = timeTextBlock.Text + " - Play again?";
+            }
+        }
+
+
+        TextBlock lastTextBlockClicked;
+        bool findingMatch = false;
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Приводим sender к типу TextBlock
+            TextBlock textBlock = sender as TextBlock;
+
+            if (!findingMatch)
+            {
+                textBlock.Visibility = Visibility.Hidden;
+                lastTextBlockClicked = textBlock;
+                findingMatch = true;
+            }else if (textBlock.Text == lastTextBlockClicked.Text)
+            {
+                matchesFound++;
+                textBlock.Visibility = Visibility.Hidden;
+                findingMatch = false;
+            }
+            else
+            {
+                lastTextBlockClicked.Visibility = Visibility.Visible;
+                findingMatch = false;
+            }
+        }
+
+        private void TimeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (matchesFound == 8)
+            {
+                SetUpGame();
             }
         }
     }

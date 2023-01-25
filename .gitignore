@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 /MatchGame/bin
 /MatchGame/obj
+/.vs
