@@ -38,8 +38,6 @@ namespace MatchGame
 
         private void SetUpGame()
         {
-
-
             List<string> animalEmoji = new List<string>()
             {
                 "🦕","🦕",
@@ -65,12 +63,16 @@ namespace MatchGame
                     textBlock.Text = nextEmoji;
                     // Удаляем ячейку с индексом
                     animalEmoji.RemoveAt(index);
+
+                    textBlock.Visibility = Visibility.Visible;
                 }
 
-                timer.Start();
-                tenthsOfSecondsElapsed = 0;
-                matchesFound = 0;
+
             }
+            timer.Start();
+            tenthsOfSecondsElapsed = 0;
+            matchesFound = 0;
+
         }
 
         private void Timer_Tick(object sender, EventArgs e)
