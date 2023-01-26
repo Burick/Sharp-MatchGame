@@ -399,3 +399,4 @@ FodyWeavers.xsd
 /MatchGame/bin
 /MatchGame/obj
 /.vs
+/.idea
